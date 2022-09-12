@@ -25,13 +25,18 @@ export default function Register(props) {
 `;
 }
 
-export function RegisterEvent(){
-    $("#register-btn").click(function(){
-
+export function RegisterEvent() {
+    let regBtn = document.getElementById('register-btn')
+    const userName = document.getElementById('username');
+    const eMail = document.getElementById('email');
+    const passWord = document.getElementById('password');
+    // let date = new Date();
+    regBtn.addEventListener("click", function (event) {
         let newUser = {
-            username: $("#username").val(),
-            email: $("#email").val(),
-            password: $("#password").val()
+            userName: userName.value,
+            email: eMail.value,
+            password: passWord.value,
+            // createdAt: date
         }
 
         console.log(newUser);
@@ -42,11 +47,10 @@ export function RegisterEvent(){
             body: JSON.stringify(newUser)
         }
 
-        fetch("http://localhost:8080/api/users", request)
+        fetch(USER_API_BASE_URL + "/create", request)
             .then(response => {
                 console.log(response.status);
                 CreateView("/");
             })
-
     })
 }

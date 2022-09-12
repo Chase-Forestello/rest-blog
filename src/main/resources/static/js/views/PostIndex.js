@@ -134,7 +134,7 @@ function deletePost(postId) {
         method: "DELETE",
         headers: {"Content-Type": "application/json"},
     }
-    const url = "http://localhost:8080/api/posts/" + postId;
+    const url = POST_API_BASE_URL + `/${postId}`;
     fetch(url, request)
         .then(function(response) {
             // TODO: check the response code
@@ -173,7 +173,7 @@ function setupSaveHandler() {
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(post)
         }
-        let url = "http://localhost:8080/api/posts";
+        let url = POST_API_BASE_URL;
 
         // if we are updating a post, change the request and the url
         if(postId > 0) {
