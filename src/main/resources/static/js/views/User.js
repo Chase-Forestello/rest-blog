@@ -27,17 +27,35 @@ export default function prepareUserHTML(props) {
             <button id="toggleShowPassword" name="toggleShowPassword">Show Password?</button>
             <button id="updatePassword" name="updatePassword">Save New Password</button>
         </form>
+        <hr>
+        <p id="testp">test</p>
+        <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Title</th>
+            <th scope="col">Content</th>
+            <th scope="col">Author</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td id="title"></td>
+            <td id="content"></td>
+            </tr>
+        </tbody>
+        </table>
     `;
 }
 
 export function prepareUserJS() {
     doTogglePasswordHandler();
     doSavePasswordHandler();
+    getUserPosts();
 }
 
 function doSavePasswordHandler() {
     const button = document.querySelector("#updatePassword");
-    button.addEventListener("click", function(event) {
+    button.addEventListener("click", function (event) {
         // grab the 3 password field values
         const oldPasswordField = document.querySelector('#oldpassword');
         const newPasswordField = document.querySelector('#newpassword');
@@ -53,7 +71,7 @@ function doSavePasswordHandler() {
         const url = `${USER_API_BASE_URL}/${me.id}/updatePassword?oldPassword=${oldPassword}&newPassword=${newPassword}`
 
         fetch(url, request)
-            .then(function(response) {
+            .then(function (response) {
                 CreateView("/");
             });
     });
@@ -61,12 +79,12 @@ function doSavePasswordHandler() {
 
 function doTogglePasswordHandler() {
     const button = document.querySelector("#toggleShowPassword");
-    button.addEventListener("click", function(event) {
+    button.addEventListener("click", function (event) {
         // grab a reference to confirmpassword
         const oldPassword = document.querySelector("#oldpassword");
         const newPassword = document.querySelector("#newpassword");
         const confirmPassword = document.querySelector("#confirmpassword");
-        if(confirmPassword.getAttribute("type") === "password") {
+        if (confirmPassword.getAttribute("type") === "password") {
             confirmPassword.setAttribute("type", "text");
             oldPassword.setAttribute("type", "text");
             newPassword.setAttribute("type", "text");
@@ -76,4 +94,24 @@ function doTogglePasswordHandler() {
             newPassword.setAttribute("type", "password");
         }
     });
+}
+
+async function getUserPosts() {
+    const requestOptions = {
+        method: "GET",
+    }
+    const getUserPosts = await fetch(`http://localhost:8080/api/posts/1`, requestOptions)
+        .then(async function (response) {
+            if (!response.ok) {
+                console.log("Fetch post error: " + response.status);
+            } else {
+                console.log("Fetch post ok");
+                return await response.json();
+            }
+        });
+    let titleData = document.getElementById('title');
+    titleData.innerText = getUserPosts.title;
+    let contentData = document.getElementById('content');
+    contentData.innerText = getUserPosts.content;
+    console.log(getUserPosts.title);
 }

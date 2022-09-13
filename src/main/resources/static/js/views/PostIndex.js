@@ -39,15 +39,30 @@ function generatePostsHTML(posts) {
         <tr>
             <th scope="col">Title</th>
             <th scope="col">Content</th>
+            <th scope="col">Categories</th>
+            <th scope="col">Author</th>
         </tr>
         </thead>
         <tbody>
     `;
     for (let i = 0; i < posts.length; i++) {
         const post = posts[i];
+
+        let categories = '';
+        for (let j = 0; j < post.categories.length; j++) {
+            categories += post.categories[j].name;
+            if (categories !== "") {
+                categories += ", "
+            } else {
+                categories += post.categories[j].name;
+            }
+
+        }
         postsHTML += `<tr>
             <td>${post.title}</td>
             <td>${post.content}</td>
+            <td>${categories}</td>
+            <td>${post.author.userName}</td>
             <td><button data-id=${post.id} class="button btn-primary editPost">Edit</button></td>
             <td><button data-id=${post.id} class="button btn-danger deletePost">Delete</button></td>
             </tr>`;
@@ -55,8 +70,6 @@ function generatePostsHTML(posts) {
     postsHTML += `</tbody></table>`;
     return postsHTML;
 }
-
-
 
 
 export function postSetup() {
@@ -70,7 +83,7 @@ function setupEditHandlers() {
     const editButtons = document.querySelectorAll(".editPost");
     // add click handler to all delete buttons
     for (let i = 0; i < editButtons.length; i++) {
-        editButtons[i].addEventListener("click", function(event) {
+        editButtons[i].addEventListener("click", function (event) {
 
             // get the post id of the delete button
             const postId = parseInt(this.getAttribute("data-id"));
@@ -83,7 +96,7 @@ function setupEditHandlers() {
 function loadPostIntoForm(postId) {
     // go find the post in the posts data that matches postId
     const post = fetchPostById(postId);
-    if(!post) {
+    if (!post) {
         console.log("did not find post for id " + postId);
         return;
     }
@@ -100,7 +113,7 @@ function loadPostIntoForm(postId) {
 
 function fetchPostById(postId) {
     for (let i = 0; i < posts.length; i++) {
-        if(posts[i].id === postId) {
+        if (posts[i].id === postId) {
             return posts[i];
         }
 
@@ -110,16 +123,12 @@ function fetchPostById(postId) {
 }
 
 
-
-
-
-
 function setupDeleteHandlers() {
     // target all delete buttons
     const deleteButtons = document.querySelectorAll(".deletePost");
     // add click handler to all delete buttons
     for (let i = 0; i < deleteButtons.length; i++) {
-        deleteButtons[i].addEventListener("click", function(event) {
+        deleteButtons[i].addEventListener("click", function (event) {
 
             // get the post id of the delete button
             const postId = this.getAttribute("data-id");
@@ -136,21 +145,16 @@ function deletePost(postId) {
     }
     const url = POST_API_BASE_URL + `/${postId}`;
     fetch(url, request)
-        .then(function(response) {
+        .then(function (response) {
             // TODO: check the response code
             CreateView("/posts");
         })
 }
 
 
-
-
-
-
-
 function setupSaveHandler() {
     const saveButton = document.querySelector("#savePost");
-    saveButton.addEventListener("click", function(event) {
+    saveButton.addEventListener("click", function (event) {
 
         // TODO: refactor later to a separate function for hygiene
 
@@ -176,13 +180,13 @@ function setupSaveHandler() {
         let url = POST_API_BASE_URL;
 
         // if we are updating a post, change the request and the url
-        if(postId > 0) {
+        if (postId > 0) {
             request.method = "PUT";
             url += `/${postId}`;
         }
 
         fetch(url, request)
-            .then(function(response) {
+            .then(function (response) {
                 // TODO: check the status code
                 CreateView("/posts");
             })

@@ -1,7 +1,9 @@
 package docrob.venusrestblog.controller;
 
+import docrob.venusrestblog.data.Category;
 import docrob.venusrestblog.data.Post;
 
+import docrob.venusrestblog.data.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -47,7 +49,18 @@ public class PostsController {
     public void createPost(@RequestBody Post newPost) {
 //        System.out.println(newPost);
         // assign  nextId to the new post
+        // make a fake author for the post
+        User fakeAuthor = new User();
+        fakeAuthor.setId(99);
+        fakeAuthor.setUserName("Fake Author");
+        fakeAuthor.setEmail("Fake@gmail.com");
+        newPost.setAuthor(fakeAuthor);
         newPost.setId(nextId);
+        Category cat1 = new Category(1L, "bunnies", null);
+        Category cat2 = new Category(2L, "margs", null);
+        newPost.setCategories(new ArrayList<>());
+        newPost.getCategories().add(cat1);
+        newPost.getCategories().add(cat2);
         nextId++;
 
         posts.add(newPost);

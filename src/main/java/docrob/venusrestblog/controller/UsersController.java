@@ -1,8 +1,11 @@
 package docrob.venusrestblog.controller;
 
+import docrob.venusrestblog.data.Post;
 import docrob.venusrestblog.data.User;
 import docrob.venusrestblog.data.UserRole;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
@@ -13,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/users", produces = "application/json")
 public class UsersController {
-    private final List<User> users = new ArrayList<>(List.of(new User(1, "cforestello", "cforestello@gmail.com", "123abc", LocalDate.now(), UserRole.ADMIN)));
+    private final List<User> users = new ArrayList<>(List.of(new User(1, "cforestello", "cforestello@gmail.com", "123abc", LocalDate.now(), UserRole.ADMIN, new ArrayList<>())));
     private long nextId = 2;
 
     @GetMapping("")
@@ -26,7 +29,7 @@ public class UsersController {
         // search through the list of posts
         // and return the post that matches the given id
         User user = findUserById(id);
-        if(user == null) {
+        if (user == null) {
             // what to do if we don't find it
             throw new RuntimeException("I don't know what I am doing");
         }
@@ -43,7 +46,7 @@ public class UsersController {
     @GetMapping("/username/{userName}")
     private User fetchByUserName(@PathVariable String userName) {
         User user = findUserByUserName(userName);
-        if(user == null) {
+        if (user == null) {
             // what to do if we don't find it
             throw new RuntimeException("I don't know what I am doing");
         }
@@ -53,7 +56,7 @@ public class UsersController {
     @GetMapping("/email/{email}")
     private User fetchByEmail(@PathVariable String email) {
         User user = findUserByEmail(email);
-        if(user == null) {
+        if (user == null) {
             // what to do if we don't find it
             throw new RuntimeException("I don't know what I am doing");
         }
@@ -61,8 +64,8 @@ public class UsersController {
     }
 
     private User findUserByUserName(String userName) {
-        for (User user: users) {
-            if(user.getUserName().equals(userName)) {
+        for (User user : users) {
+            if (user.getUserName().equals(userName)) {
                 return user;
             }
         }
@@ -71,8 +74,8 @@ public class UsersController {
     }
 
     private User findUserByEmail(String email) {
-        for (User user: users) {
-            if(user.getEmail().equals(email)) {
+        for (User user : users) {
+            if (user.getEmail().equals(email)) {
                 return user;
             }
         }
@@ -81,8 +84,8 @@ public class UsersController {
     }
 
     private User findUserById(long id) {
-        for (User user: users) {
-            if(user.getId() == id) {
+        for (User user : users) {
+            if (user.getId() == id) {
                 return user;
             }
         }
@@ -106,7 +109,7 @@ public class UsersController {
         // search through the list of posts
         // and delete the post that matches the given id
         User user = findUserById(id);
-        if(user != null) {
+        if (user != null) {
             users.remove(user);
             return;
         }
@@ -119,10 +122,10 @@ public class UsersController {
         // find the post to update in the posts list
 
         User user = findUserById(id);
-        if(user == null) {
+        if (user == null) {
             System.out.println("User not found");
         } else {
-            if(updatedUser.getEmail() != null) {
+            if (updatedUser.getEmail() != null) {
                 user.setEmail(updatedUser.getEmail());
             }
             return;
@@ -133,20 +136,19 @@ public class UsersController {
     @PutMapping("/{id}/updatePassword")
     private void updatePassword(@PathVariable Long id, @RequestParam(required = false) String oldPassword, @Valid @Size(min = 3) @RequestParam String newPassword) {
         User user = findUserById(id);
-        if(user == null) {
-            throw new RuntimeException("cannot find user " + id);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User id " + id + "not found");
         }
 
         // compare old password with saved pw
-        if(!user.getPassword().equals(oldPassword)) {
+        if (!user.getPassword().equals(oldPassword)) {
             throw new RuntimeException("amscray");
         }
 
         // validate new password
-        if(newPassword.length() < 3) {
-            throw new RuntimeException("new pw length must be at least 3");
+        if (newPassword.length() < 3) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "New password length must be at least 3");
         }
-
         user.setPassword(newPassword);
     }
 }
