@@ -3,10 +3,13 @@ import CreateView from "../createView.js"
 let me;
 export default function prepareUserHTML(props) {
     me = props.me;
+    console.log(me);
     // make the user's original pw available somewhere in here
     return `
         <h1>User Info</h1>
         <hr>
+        <h5 id="username">Username: ${me.userName}</h5>
+        <h5 id="email">Email: ${me.email}</h5>
         <hr>
         
         <form>
@@ -32,6 +35,7 @@ export default function prepareUserHTML(props) {
         <tr>
             <th scope="col">Title</th>
             <th scope="col">Content</th>
+            <th scope="col">Categories</th>
             <th scope="col">Author</th>
         </tr>
         </thead>
@@ -44,7 +48,6 @@ export default function prepareUserHTML(props) {
 export function prepareUserJS() {
     doTogglePasswordHandler();
     doSavePasswordHandler();
-    getUserPosts();
 }
 
 function doSavePasswordHandler() {
@@ -88,32 +91,16 @@ function doTogglePasswordHandler() {
             newPassword.setAttribute("type", "password");
         }
     });
-}
 
-async function getUserPosts() {
-    const requestOptions = {
-        method: "GET",
-    }
-    const getUserPosts = await fetch(`http://localhost:8080/api/users/4`, requestOptions)
-        .then(async function (response) {
-            if (!response.ok) {
-                console.log("Fetch post error: " + response.status);
-            } else {
-                console.log("Fetch post ok");
-                return await response.json();
-            }
-        });
 
     let tbInsert = document.getElementById('tbInsert');
-    let titleData = document.getElementById('title');
-    let contentData = document.getElementById('content');
-    let authorData = document.getElementById('author');
-    for (let i = 0; i < getUserPosts.posts.length; i++) {
+    for (let i = 0; i < me.posts.length; i++) {
         tbInsert.innerHTML += `
         <tr>
-        <td id="title">${getUserPosts.posts[i].title}</td>
-        <td id="content">${getUserPosts.posts[i].content}</td>
-        <td id="author">${getUserPosts.userName}</td>
+        <td id="title">${me.posts[i].title}</td>
+        <td id="content">${me.posts[i].content}</td>
+        <td id="categories">${me.posts[i].categories[0].name}</td>
+        <td id="author">${me.userName}</td>
         </tr>
 `;
     }
