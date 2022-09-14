@@ -7,8 +7,6 @@ export default function prepareUserHTML(props) {
     return `
         <h1>User Info</h1>
         <hr>
-        <h2>Username: </h2> ${props.me.userName}
-        <h2>Email: </h2> ${props.me.email}
         <hr>
         
         <form>
@@ -37,11 +35,7 @@ export default function prepareUserHTML(props) {
             <th scope="col">Author</th>
         </tr>
         </thead>
-        <tbody>
-        <tr>
-            <td id="title"></td>
-            <td id="content"></td>
-            </tr>
+        <tbody id="tbInsert">
         </tbody>
         </table>
     `;
@@ -100,7 +94,7 @@ async function getUserPosts() {
     const requestOptions = {
         method: "GET",
     }
-    const getUserPosts = await fetch(`http://localhost:8080/api/posts/1`, requestOptions)
+    const getUserPosts = await fetch(`http://localhost:8080/api/users/4`, requestOptions)
         .then(async function (response) {
             if (!response.ok) {
                 console.log("Fetch post error: " + response.status);
@@ -109,9 +103,18 @@ async function getUserPosts() {
                 return await response.json();
             }
         });
+
+    let tbInsert = document.getElementById('tbInsert');
     let titleData = document.getElementById('title');
-    titleData.innerText = getUserPosts.title;
     let contentData = document.getElementById('content');
-    contentData.innerText = getUserPosts.content;
-    console.log(getUserPosts.title);
+    let authorData = document.getElementById('author');
+    for (let i = 0; i < getUserPosts.posts.length; i++) {
+        tbInsert.innerHTML += `
+        <tr>
+        <td id="title">${getUserPosts.posts[i].title}</td>
+        <td id="content">${getUserPosts.posts[i].content}</td>
+        <td id="author">${getUserPosts.userName}</td>
+        </tr>
+`;
+    }
 }

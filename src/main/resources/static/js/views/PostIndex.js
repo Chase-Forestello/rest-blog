@@ -29,7 +29,7 @@ export default function PostIndex(props) {
             </form>
             
         </main>
-    `;
+    <link `;
 }
 
 function generatePostsHTML(posts) {
@@ -51,10 +51,8 @@ function generatePostsHTML(posts) {
         let categories = '';
         for (let j = 0; j < post.categories.length; j++) {
             categories += post.categories[j].name;
-            if (categories !== "") {
+            if (j < post.categories.length - 1) {
                 categories += ", "
-            } else {
-                categories += post.categories[j].name;
             }
 
         }
