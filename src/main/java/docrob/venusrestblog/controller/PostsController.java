@@ -11,7 +11,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/api/posts", produces = "application/json")
 public class PostsController {
-
     private final PostsRepository postRepository;
 
     public PostsController(PostsRepository postRepository) {
@@ -45,7 +44,6 @@ public class PostsController {
 //        newPost.setCategories(new ArrayList<>());
 //        newPost.getCategories().add(cat1);
 //        newPost.getCategories().add(cat2);
-
         postRepository.save(newPost);
     }
 

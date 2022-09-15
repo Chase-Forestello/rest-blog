@@ -10,7 +10,6 @@ export default function Register(props) {
             </head>
             <body>
                 <h1>Register</h1>
-        
                 <form id="register-form">
                     <label for="username">Username</label>
                     <input id="username" name="username" type="text"/>
@@ -38,15 +37,12 @@ export function RegisterEvent() {
             password: passWord.value,
             // createdAt: date
         }
-
         console.log(newUser);
-
         let request = {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify(newUser)
         }
-
         fetch(USER_API_BASE_URL + "/create", request)
             .then(response => {
                 console.log(response.status);

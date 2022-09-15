@@ -32,6 +32,7 @@ public class Post {
             fetch = FetchType.LAZY,
             cascade = {CascadeType.DETACH, CascadeType.REFRESH},
             targetEntity = Category.class)
+
     @JoinTable(
             name = "post_category",
             joinColumns = {@JoinColumn(name = "post_id", nullable = false, updatable = false)},

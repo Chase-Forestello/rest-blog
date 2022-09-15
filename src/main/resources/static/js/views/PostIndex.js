@@ -6,7 +6,6 @@ export default function PostIndex(props) {
     const postsHTML = generatePostsHTML(props.posts);
     // save this for loading edits later
     posts = props.posts;
-
     return `
         <header>
             <h1>Posts Page</h1>
@@ -16,7 +15,6 @@ export default function PostIndex(props) {
             <div>
                 ${postsHTML}   
             </div>
-            
             <h3>Add a post</h3>
             <form>
                 <label for="title">Title</label><br>
@@ -27,9 +25,7 @@ export default function PostIndex(props) {
                 <br>
                 <button data-id="0" id="savePost" name="savePost" class="button btn-primary">Save Post</button>
             </form>
-            
-        </main>
-    <link `;
+        </main>`;
 }
 
 function generatePostsHTML(posts) {
@@ -47,14 +43,12 @@ function generatePostsHTML(posts) {
     `;
     for (let i = 0; i < posts.length; i++) {
         const post = posts[i];
-
         let categories = '';
         for (let j = 0; j < post.categories.length; j++) {
             categories += post.categories[j].name;
             if (j < post.categories.length - 1) {
                 categories += ", "
             }
-
         }
         postsHTML += `<tr>
             <td>${post.title}</td>
@@ -69,7 +63,6 @@ function generatePostsHTML(posts) {
     return postsHTML;
 }
 
-
 export function postSetup() {
     setupSaveHandler();
     setupEditHandlers();
@@ -82,10 +75,8 @@ function setupEditHandlers() {
     // add click handler to all delete buttons
     for (let i = 0; i < editButtons.length; i++) {
         editButtons[i].addEventListener("click", function (event) {
-
             // get the post id of the delete button
             const postId = parseInt(this.getAttribute("data-id"));
-
             loadPostIntoForm(postId);
         });
     }
@@ -98,14 +89,12 @@ function loadPostIntoForm(postId) {
         console.log("did not find post for id " + postId);
         return;
     }
-
     // load the post data into the form
     const titleField = document.querySelector("#title");
     const contentField = document.querySelector("#content");
+    const saveButton = document.querySelector("#savePost");
     titleField.value = post.title;
     contentField.value = post.content;
-
-    const saveButton = document.querySelector("#savePost");
     saveButton.setAttribute("data-id", postId);
 }
 
@@ -114,12 +103,10 @@ function fetchPostById(postId) {
         if (posts[i].id === postId) {
             return posts[i];
         }
-
     }
     // didn't find it so return something falsy
     return false;
 }
-
 
 function setupDeleteHandlers() {
     // target all delete buttons
@@ -127,10 +114,8 @@ function setupDeleteHandlers() {
     // add click handler to all delete buttons
     for (let i = 0; i < deleteButtons.length; i++) {
         deleteButtons[i].addEventListener("click", function (event) {
-
             // get the post id of the delete button
             const postId = this.getAttribute("data-id");
-
             deletePost(postId);
         });
     }
@@ -153,22 +138,17 @@ function deletePost(postId) {
 function setupSaveHandler() {
     const saveButton = document.querySelector("#savePost");
     saveButton.addEventListener("click", function (event) {
-
         // TODO: refactor later to a separate function for hygiene
-
         // TODO: check the data-id for the save button
         const postId = parseInt(this.getAttribute("data-id"));
-
         // get the title and content for the new/updated post
         const titleField = document.querySelector("#title");
         const contentField = document.querySelector("#content");
-
         // make the new/updated post object
         const post = {
             title: titleField.value,
             content: contentField.value
         }
-
         // make the request
         const request = {
             method: "POST",
@@ -176,13 +156,11 @@ function setupSaveHandler() {
             body: JSON.stringify(post)
         }
         let url = POST_API_BASE_URL;
-
         // if we are updating a post, change the request and the url
         if (postId > 0) {
             request.method = "PUT";
             url += `/${postId}`;
         }
-
         fetch(url, request)
             .then(function (response) {
                 // TODO: check the status code

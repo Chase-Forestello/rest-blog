@@ -2,6 +2,7 @@ package docrob.venusrestblog.controller;
 
 import docrob.venusrestblog.data.User;
 import docrob.venusrestblog.repository.UsersRepository;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,7 +15,6 @@ import java.util.Optional;
 @RestController
 @RequestMapping(value = "/api/users", produces = "application/json")
 public class UsersController {
-
     private final UsersRepository userRepository;
 
     public UsersController(UsersRepository userRepository) {
@@ -119,7 +119,6 @@ public class UsersController {
         if (newPassword.length() < 3) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "new pw length must be at least 3 characters");
         }
-
         user.setPassword(newPassword);
         userRepository.save(user);
     }

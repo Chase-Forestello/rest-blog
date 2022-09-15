@@ -11,7 +11,6 @@ export default function prepareUserHTML(props) {
         <h5 id="username">Username: ${me.userName}</h5>
         <h5 id="email">Email: ${me.email}</h5>
         <hr>
-        
         <form>
             <label for="oldpassword">Current password:</label>
             <input type="password" id="oldpassword" name="oldpassword">
@@ -23,7 +22,6 @@ export default function prepareUserHTML(props) {
             <br>
             <label for="confirmpassword">Confirm new password:</label>
             <input type="password" id="confirmpassword" name="confirmpassword">
-            
             <br>
             <button id="toggleShowPassword" name="toggleShowPassword">Show Password?</button>
             <button id="updatePassword" name="updatePassword">Save New Password</button>
@@ -49,7 +47,6 @@ export function prepareUserJS() {
     doTogglePasswordHandler();
     doSavePasswordHandler();
     showUserPosts();
-    addCats();
 }
 
 function doSavePasswordHandler() {
@@ -58,17 +55,12 @@ function doSavePasswordHandler() {
         // grab the 3 password field values
         const oldPasswordField = document.querySelector('#oldpassword');
         const newPasswordField = document.querySelector('#newpassword');
-        const confirmPasswordField = document.querySelector('#confirmpassword');
-
         const oldPassword = oldPasswordField.value;
         const newPassword = newPasswordField.value;
-        const confirmPassword = confirmPasswordField.value;
-
         const request = {
             method: "PUT",
         }
         const url = `${USER_API_BASE_URL}/${me.id}/updatePassword?oldPassword=${oldPassword}&newPassword=${newPassword}`
-
         fetch(url, request)
             .then(function (response) {
                 CreateView("/");
@@ -104,20 +96,18 @@ function showUserPosts() {
         <td id="content">${me.posts[i].content}</td>
         <td id="author">${me.userName}</td>
         <td class="categories"></td>
-            </tr>
-`
-        for (let j = 0; j < me.posts.length; j++) {
-
-        console.log(me.posts[0].categories.length);
-        }
+            </tr>`
     }
-}
-
-function addCats() {
     let tdInsert = document.getElementsByClassName('categories');
     for (let j = 0; j < me.posts.length; j++) {
-        for (let i = 0; i < me.posts.length; i++) {
-            tdInsert[j].innerHTML = `${me.posts[j].categories[i].name}`
+        console.log(me.posts[j].categories.length);
+        console.log(me.posts[j].categories);
+        for (let i = 0; i < me.posts[j].categories.length; i++) {
+            console.log(me.posts[j].categories[i].name)
+            tdInsert[j].innerHTML += me.posts[j].categories[i].name;
+            if (i < me.posts[j].categories.length - 1) {
+                tdInsert[j].innerHTML += ", ";
+            }
         }
     }
 }

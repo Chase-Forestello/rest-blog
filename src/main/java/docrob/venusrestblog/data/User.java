@@ -2,7 +2,6 @@ package docrob.venusrestblog.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
-import org.apache.commons.lang3.builder.ToStringExclude;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;

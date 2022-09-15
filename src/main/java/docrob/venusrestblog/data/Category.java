@@ -17,7 +17,6 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
     @Column(nullable = false)
     private String name;
 
@@ -25,6 +24,7 @@ public class Category {
             fetch = FetchType.LAZY,
             cascade = {CascadeType.DETACH, CascadeType.REFRESH},
             targetEntity = Post.class)
+
     @JoinTable(
             name = "post_category",
             joinColumns = {@JoinColumn(name = "category_id", nullable = false, updatable = false)},
