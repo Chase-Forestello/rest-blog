@@ -48,6 +48,8 @@ export default function prepareUserHTML(props) {
 export function prepareUserJS() {
     doTogglePasswordHandler();
     doSavePasswordHandler();
+    showUserPosts();
+    addCats();
 }
 
 function doSavePasswordHandler() {
@@ -91,17 +93,31 @@ function doTogglePasswordHandler() {
             newPassword.setAttribute("type", "password");
         }
     });
+}
 
-
+function showUserPosts() {
     let tbInsert = document.getElementById('tbInsert');
     for (let i = 0; i < me.posts.length; i++) {
         tbInsert.innerHTML += `
         <tr>
         <td id="title">${me.posts[i].title}</td>
         <td id="content">${me.posts[i].content}</td>
-        <td id="categories">${me.posts[i].categories[0].name}</td>
         <td id="author">${me.userName}</td>
-        </tr>
-`;
+        <td class="categories"></td>
+            </tr>
+`
+        for (let j = 0; j < me.posts.length; j++) {
+
+        console.log(me.posts[0].categories.length);
+        }
+    }
+}
+
+function addCats() {
+    let tdInsert = document.getElementsByClassName('categories');
+    for (let j = 0; j < me.posts.length; j++) {
+        for (let i = 0; i < me.posts.length; i++) {
+            tdInsert[j].innerHTML = `${me.posts[j].categories[i].name}`
+        }
     }
 }
