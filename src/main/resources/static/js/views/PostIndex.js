@@ -54,6 +54,7 @@ function generatePostsHTML(posts) {
             <td>${post.title}</td>
             <td>${post.content}</td>
             <td>${categories}</td>
+            <td>${post.author.userName}</td>
             <td><button data-id=${post.id} class="button btn-primary editPost">Edit</button></td>
             <td><button data-id=${post.id} class="button btn-danger deletePost">Delete</button></td>
             </tr>`;

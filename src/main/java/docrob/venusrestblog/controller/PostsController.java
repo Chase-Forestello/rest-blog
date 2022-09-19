@@ -1,21 +1,25 @@
 package docrob.venusrestblog.controller;
 
+import docrob.venusrestblog.data.Category;
 import docrob.venusrestblog.data.Post;
 
+import docrob.venusrestblog.data.User;
+import docrob.venusrestblog.services.EmailService;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import docrob.venusrestblog.repository.PostsRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping(value = "/api/posts", produces = "application/json")
 public class PostsController {
     private final PostsRepository postRepository;
 
-    public PostsController(PostsRepository postRepository) {
-        this.postRepository = postRepository;
-    }
+    private final EmailService emailService;
 
 
     @GetMapping("")
@@ -39,12 +43,13 @@ public class PostsController {
 //        fakeAuthor.setUserName("Fake Author");
 //        fakeAuthor.setEmail("Fake@gmail.com");
 //        newPost.setAuthor(fakeAuthor);
-//        Category cat1 = new Category(1L, "bunnies", null);
-//        Category cat2 = new Category(2L, "margs", null);
+//        Category cat1 = new Category(99L, "bunnies", null);
+//        Category cat2 = new Category(98L, "margs", null);
 //        newPost.setCategories(new ArrayList<>());
 //        newPost.getCategories().add(cat1);
 //        newPost.getCategories().add(cat2);
         postRepository.save(newPost);
+        emailService.prepareAndSend(newPost, "New post", "see post");
     }
 
     @DeleteMapping("/{id}")
