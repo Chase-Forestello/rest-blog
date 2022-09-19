@@ -4,6 +4,8 @@ import docrob.venusrestblog.data.Category;
 import docrob.venusrestblog.data.Post;
 
 import docrob.venusrestblog.data.User;
+import docrob.venusrestblog.repository.CategoriesRepository;
+import docrob.venusrestblog.repository.UsersRepository;
 import docrob.venusrestblog.services.EmailService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,8 @@ import java.util.Optional;
 @RequestMapping(value = "/api/posts", produces = "application/json")
 public class PostsController {
     private final PostsRepository postRepository;
+    private final UsersRepository userRepository;
+    private final CategoriesRepository categoryRepository;
 
     private final EmailService emailService;
 
@@ -38,18 +42,18 @@ public class PostsController {
 //        System.out.println(newPost);
         // assign  nextId to the new post
         // make a fake author for the post
-//        User fakeAuthor = new User();
-//        fakeAuthor.setId(99L);
-//        fakeAuthor.setUserName("Fake Author");
-//        fakeAuthor.setEmail("Fake@gmail.com");
-//        newPost.setAuthor(fakeAuthor);
-//        Category cat1 = new Category(99L, "bunnies", null);
-//        Category cat2 = new Category(98L, "margs", null);
+        User author = userRepository.findById(1L).get();
+        newPost.setAuthor(author);
 //        newPost.setCategories(new ArrayList<>());
+
+        // use first 2 categories for the post by default
+//        Category cat1 = categoryRepository.findById(2L).get();
+//        Category cat2 = categoryRepository.findById(1L).get();
+
 //        newPost.getCategories().add(cat1);
 //        newPost.getCategories().add(cat2);
         postRepository.save(newPost);
-        emailService.prepareAndSend(newPost, "New post", "see post");
+        emailService.prepareAndSend(newPost, "New post created by: " + newPost.getAuthor().getUserName(), "Title: " + newPost.getTitle() + "\nContent: " + newPost.getContent());
     }
 
     @DeleteMapping("/{id}")

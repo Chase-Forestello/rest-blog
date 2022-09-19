@@ -23,6 +23,15 @@ export default function PostIndex(props) {
                 <label for="content">Content</label><br>
                 <textarea id="content" name="content" rows="10" cols="50" placeholder="Enter content"></textarea>
                 <br>
+                <label for="cars">Choose a car:</label>
+                <label for="categories">Categories:</label><br>
+                <select name="categories" id="categories" multiple>
+                  <option value="1">Tech</option>
+                  <option value="2">Testing</option>
+                  <option value="3">Coding</option>
+                  <option value="4">Nature</option>
+                  <option value="5">Gaming</option>
+                </select>
                 <button data-id="0" id="savePost" name="savePost" class="button btn-primary">Save Post</button>
             </form>
         </main>`;
@@ -138,16 +147,33 @@ function deletePost(postId) {
 function setupSaveHandler() {
     const saveButton = document.querySelector("#savePost");
     saveButton.addEventListener("click", function (event) {
+        const values = Array.prototype.slice.call(document.querySelectorAll('#categories option:checked'), 0).map(function (v, i, a) {
+            return v.value;
+        });
+        console.log(values);
         // TODO: refactor later to a separate function for hygiene
         // TODO: check the data-id for the save button
         const postId = parseInt(this.getAttribute("data-id"));
         // get the title and content for the new/updated post
         const titleField = document.querySelector("#title");
         const contentField = document.querySelector("#content");
+        let cats;
+        for (let i = 0; i < values.length; i++) {
+            if (i <= values.length - 1) {
+                cats += `${{
+                    id: values[i]
+                } + ","}`
+            } else {
+                cats += `${{
+                    id: values[i]
+                }}`
+            }
+        }
         // make the new/updated post object
         const post = {
             title: titleField.value,
-            content: contentField.value
+            content: contentField.value,
+            categories: [cats]
         }
         // make the request
         const request = {
