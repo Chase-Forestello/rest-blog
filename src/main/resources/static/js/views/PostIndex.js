@@ -145,35 +145,32 @@ function deletePost(postId) {
 
 
 function setupSaveHandler() {
+    // trying to push categories into new post but getting back [Object object] instead of the correct
+    // value which I am able to log outside of the loop...
     const saveButton = document.querySelector("#savePost");
     saveButton.addEventListener("click", function (event) {
         const values = Array.prototype.slice.call(document.querySelectorAll('#categories option:checked'), 0).map(function (v, i, a) {
             return v.value;
         });
-        console.log(values);
         // TODO: refactor later to a separate function for hygiene
         // TODO: check the data-id for the save button
         const postId = parseInt(this.getAttribute("data-id"));
         // get the title and content for the new/updated post
         const titleField = document.querySelector("#title");
         const contentField = document.querySelector("#content");
-        let cats;
+        let categoriesList = "";
         for (let i = 0; i < values.length; i++) {
-            if (i <= values.length - 1) {
-                cats += `${{
+            categoriesList += [
+                {
                     id: values[i]
-                } + ","}`
-            } else {
-                cats += `${{
-                    id: values[i]
-                }}`
-            }
+                }
+            ]
         }
         // make the new/updated post object
         const post = {
             title: titleField.value,
             content: contentField.value,
-            categories: [cats]
+            categories: categoriesList
         }
         // make the request
         const request = {
