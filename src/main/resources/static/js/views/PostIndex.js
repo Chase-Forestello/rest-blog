@@ -158,19 +158,18 @@ function setupSaveHandler() {
         // get the title and content for the new/updated post
         const titleField = document.querySelector("#title");
         const contentField = document.querySelector("#content");
-        let categoriesList = "";
-        for (let i = 0; i < values.length; i++) {
-            categoriesList += [
-                {
-                    id: values[i]
-                }
-            ]
-        }
+        // let categoriesList = "";
+        // for (let i = 0; i <= values.length; i++) {
+        //     categoriesList += [
+        //         {
+        //             id: values[i]
+        //         }
+        //     ]
+        // }
         // make the new/updated post object
         const post = {
             title: titleField.value,
-            content: contentField.value,
-            categories: categoriesList
+            content: contentField.value
         }
         // make the request
         const request = {
