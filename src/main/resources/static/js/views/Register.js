@@ -1,6 +1,13 @@
 import CreateView from "../createView.js"
+import {isLoggedIn} from "../auth.js";
+import createView from "../createView.js";
 
 export default function Register(props) {
+    if(isLoggedIn()){
+        createView("/");
+        return;
+    }
+
     return `
     <!DOCTYPE html>
         <html>
@@ -10,15 +17,19 @@ export default function Register(props) {
             </head>
             <body>
                 <h1>Register</h1>
-                <form id="register-form">
-                    <label for="username">Username</label>
-                    <input id="username" name="username" type="text"/>
-                    <label for="email">Email</label>
-                    <input id="email" name="email" type="email">
-                    <label for="password">Password</label>
-                    <input id="password" name="password" type="password"/>
-                    <button id="register-btn" type="button">Register</button>
-                </form>
+                <div class="container">
+                    <div id="hgj" class="row">
+                        <form id="register-form">
+                            <label for="username">Username</label>
+                            <input class="col-12" id="username" name="username" type="text"/>
+                            <label for="email">Email</label>
+                            <input class="col-12" id="email" name="email" type="email">
+                            <label for="password">Password</label>
+                            <input class="col-12" id="password" name="password" type="password"/>
+                            <button id="register-btn" type="button">Register</button>
+                        </form>
+                    </div>
+                </div>
             </body>
         </html>
 `;

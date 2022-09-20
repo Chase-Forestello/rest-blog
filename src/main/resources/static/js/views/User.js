@@ -33,8 +33,8 @@ export default function prepareUserHTML(props) {
         <tr>
             <th scope="col">Title</th>
             <th scope="col">Content</th>
-            <th scope="col">Categories</th>
             <th scope="col">Author</th>
+            <th scope="col">Categories</th>
         </tr>
         </thead>
         <tbody id="tbInsert">
@@ -89,24 +89,29 @@ function doTogglePasswordHandler() {
 
 function showUserPosts() {
     let tbInsert = document.getElementById('tbInsert');
-    for (let i = 0; i < me.posts.length; i++) {
-        tbInsert.innerHTML += `
+    if (me.posts) {
+        for (let i = 0; i < me.posts.length; i++) {
+            tbInsert.innerHTML += `
         <tr>
         <td id="title">${me.posts[i].title}</td>
         <td id="content">${me.posts[i].content}</td>
         <td id="author">${me.userName}</td>
         <td class="categories"></td>
             </tr>`
-    }
-    let tdInsert = document.getElementsByClassName('categories');
-    for (let j = 0; j < me.posts.length; j++) {
-        console.log(me.posts[j].categories.length);
-        console.log(me.posts[j].categories);
-        for (let i = 0; i < me.posts[j].categories.length; i++) {
-            console.log(me.posts[j].categories[i].name)
-            tdInsert[j].innerHTML += me.posts[j].categories[i].name;
-            if (i < me.posts[j].categories.length - 1) {
-                tdInsert[j].innerHTML += ", ";
+        }
+        let tdInsert = document.getElementsByClassName('categories');
+        for (let j = 0; j < me.posts.length; j++) {
+            if (me.posts[j].categories == null) {
+                return;
+            } else {
+                console.log(me.posts[j].categories);
+            }
+            for (let i = 0; i < me.posts[j].categories.length; i++) {
+                console.log(me.posts[j].categories[i].name)
+                tdInsert[j].innerHTML += me.posts[j].categories[i].name;
+                if (i < me.posts[j].categories.length - 1) {
+                    tdInsert[j].innerHTML += ", ";
+                }
             }
         }
     }

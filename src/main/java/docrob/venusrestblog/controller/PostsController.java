@@ -7,11 +7,17 @@ import docrob.venusrestblog.data.User;
 import docrob.venusrestblog.repository.CategoriesRepository;
 import docrob.venusrestblog.repository.UsersRepository;
 import docrob.venusrestblog.services.EmailService;
+import io.swagger.v3.oas.annotations.headers.Header;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 import docrob.venusrestblog.repository.PostsRepository;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,11 +44,13 @@ public class PostsController {
     }
 
     @PostMapping("")
-    public void createPost(@RequestBody Post newPost) {
+    @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
+    public void createPost(@RequestBody Post newPost, OAuth2Authentication auth) {
 //        System.out.println(newPost);
         // assign  nextId to the new post
         // make a fake author for the post
-        User author = userRepository.findById(1L).get();
+        String userName = auth.getName();
+        User author = userRepository.findByUserName(userName);
         newPost.setAuthor(author);
 //        newPost.setCategories(new ArrayList<>());
 
@@ -57,14 +65,19 @@ public class PostsController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
     public void deletePostById(@PathVariable long id) {
         postRepository.deleteById(id);
     }
 
     @PutMapping("/{id}")
-    public void updatePost(@RequestBody Post updatedPost, @PathVariable long id) {
+    @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
+    public void updatePost(@RequestBody Post updatedPost, @PathVariable long id, OAuth2Authentication auth) {
         // find the post to update in the posts list
         updatedPost.setId(id);
+        String userName = auth.getName();
+        User author = userRepository.findByUserName(userName);
+        updatedPost.setAuthor(author);
         postRepository.save(updatedPost);
 //        Post post = findPostById(id);
 //        if(post == null) {

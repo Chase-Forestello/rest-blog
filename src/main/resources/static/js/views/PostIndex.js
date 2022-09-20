@@ -1,4 +1,5 @@
 import CreateView from "../createView.js";
+import {getHeaders} from "../auth.js";
 
 let posts;
 
@@ -67,6 +68,7 @@ function generatePostsHTML(posts) {
             <td><button data-id=${post.id} class="button btn-primary editPost">Edit</button></td>
             <td><button data-id=${post.id} class="button btn-danger deletePost">Delete</button></td>
             </tr>`;
+
     }
     postsHTML += `</tbody></table>`;
     return postsHTML;
@@ -133,7 +135,7 @@ function setupDeleteHandlers() {
 function deletePost(postId) {
     const request = {
         method: "DELETE",
-        headers: {"Content-Type": "application/json"},
+        headers: getHeaders(),
     }
     const url = POST_API_BASE_URL + `/${postId}`;
     fetch(url, request)
@@ -147,34 +149,51 @@ function deletePost(postId) {
 function setupSaveHandler() {
     // trying to push categories into new post but getting back [Object object] instead of the correct
     // value which I am able to log outside of the loop...
+    // Making progress but js still wont read the objects properly
     const saveButton = document.querySelector("#savePost");
     saveButton.addEventListener("click", function (event) {
         const values = Array.prototype.slice.call(document.querySelectorAll('#categories option:checked'), 0).map(function (v, i, a) {
             return v.value;
         });
+        for (let i = 0; i < values.length; i++) {
+            console.log(`{id: ${values[i]}}`)
+        }
         // TODO: refactor later to a separate function for hygiene
         // TODO: check the data-id for the save button
         const postId = parseInt(this.getAttribute("data-id"));
         // get the title and content for the new/updated post
         const titleField = document.querySelector("#title");
         const contentField = document.querySelector("#content");
-        // let categoriesList = "";
-        // for (let i = 0; i <= values.length; i++) {
-        //     categoriesList += [
-        //         {
-        //             id: values[i]
-        //         }
-        //     ]
+        let categoriesList = [];
+        // for (let i = 0; i < values.length; i++) {
+        //     if (i < values.length - 1) {
+        //         categoriesList +=
+        //             `{id: ${values[i]}}, `
+        //     } else {
+        //         categoriesList +=
+        //             `{id: ${values[i]}}`
+        //     }
         // }
+        for (let i = 0; i < values.length; i++) {
+            categoriesList.push({id: values[i]})
+        }
+        console.log(categoriesList);
         // make the new/updated post object
         const post = {
             title: titleField.value,
-            content: contentField.value
+            content: contentField.value,
+            categories: categoriesList
+            // categories: [
+            //     {
+            //         id: 1
+            //     }
+            // ]
+            // categoriesList
         }
         // make the request
         const request = {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: getHeaders(),
             body: JSON.stringify(post)
         }
         let url = POST_API_BASE_URL;
