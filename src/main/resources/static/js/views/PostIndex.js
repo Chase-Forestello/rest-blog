@@ -150,6 +150,7 @@ function setupSaveHandler() {
     // trying to push categories into new post but getting back [Object object] instead of the correct
     // value which I am able to log outside of the loop...
     // Making progress but js still wont read the objects properly
+    //UPDATE: IT WORKS!
     const saveButton = document.querySelector("#savePost");
     saveButton.addEventListener("click", function (event) {
         const values = Array.prototype.slice.call(document.querySelectorAll('#categories option:checked'), 0).map(function (v, i, a) {
