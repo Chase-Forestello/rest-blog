@@ -3,8 +3,8 @@ import {isLoggedIn} from "../../auth.js";
 export default function Navbar(props) {
     let navbar = `
         <nav>
-            <a href="/" data-link>Home</a>
-            <a href="/about" data-link>About</a>
+<!--            <a href="/" data-link>Home</a>-->
+<!--            <a href="/about" data-link>About</a>-->
             <a href="/posts" data-link>Posts</a>
     `;
 

@@ -1,25 +1,24 @@
 package docrob.venusrestblog.controller;
 
-import docrob.venusrestblog.data.Category;
 import docrob.venusrestblog.data.Post;
 
 import docrob.venusrestblog.data.User;
+import docrob.venusrestblog.data.UserRole;
 import docrob.venusrestblog.repository.CategoriesRepository;
 import docrob.venusrestblog.repository.UsersRepository;
 import docrob.venusrestblog.services.EmailService;
-import io.swagger.v3.oas.annotations.headers.Header;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.*;
 import docrob.venusrestblog.repository.PostsRepository;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+
+import static docrob.venusrestblog.data.UserRole.ADMIN;
 
 @AllArgsConstructor
 @RestController
@@ -46,6 +45,12 @@ public class PostsController {
     @PostMapping("")
     @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
     public void createPost(@RequestBody Post newPost, OAuth2Authentication auth) {
+        if (newPost.getTitle() == null || newPost.getTitle().length() < 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Title cannot be blank!");
+        }
+        if (newPost.getContent() == null || newPost.getContent().length() < 1) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Content cannot be blank!");
+        }
 //        System.out.println(newPost);
         // assign  nextId to the new post
         // make a fake author for the post
@@ -66,8 +71,15 @@ public class PostsController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('USER') || hasAuthority('ADMIN')")
-    public void deletePostById(@PathVariable long id) {
-        postRepository.deleteById(id);
+    public void deletePostById(@PathVariable long id, OAuth2Authentication auth) {
+        String userName = auth.getName();
+        User loggedInUser = userRepository.findByUserName(userName);
+        Long postAuthorId = fetchPostById(id).get().getAuthor().getId();
+        if (loggedInUser.getId().equals(postAuthorId) || loggedInUser.getRole().equals(ADMIN)) {
+            postRepository.deleteById(id);
+        } else {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You must be logged in as that user!");
+        }
     }
 
     @PutMapping("/{id}")
