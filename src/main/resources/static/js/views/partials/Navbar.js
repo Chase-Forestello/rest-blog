@@ -1,4 +1,4 @@
-import {isLoggedIn} from "../../auth.js";
+import {getUser, isLoggedIn} from "../../auth.js";
 
 export default function Navbar(props) {
     let navbar = `
@@ -9,9 +9,11 @@ export default function Navbar(props) {
     `;
 
     if (isLoggedIn()) {
+        let user = getUser();
         navbar += `
         <a href="/me" data-link>About ME</a>
-        <a href="/logout" data-link>Logout</a>`
+        <a href="/logout" data-link>Logout</a>
+        <text class="float-end">Logged in as: ${user.userName}</text>`
     } else {
         navbar += `
         <a href="/login" data-link>Login</a>

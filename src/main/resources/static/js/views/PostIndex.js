@@ -1,15 +1,27 @@
 import CreateView from "../createView.js";
-import {getHeaders} from "../auth.js";
+import {getHeaders, isLoggedIn} from "../auth.js";
 import {getUser} from "../auth.js";
+import createView from "../createView.js";
 
 let posts;
+const catList = ["Tech", "Testing", "Coding", "Nature", "Gaming"];
 
 export default function PostIndex(props) {
     const postsHTML = generatePostsHTML(props.posts);
     const catHTML = generateCategoriesHTML();
     // save this for loading edits later
     posts = props.posts;
-    return `
+    if (!isLoggedIn()) {
+        return `<header>
+            <h1>Posts Page</h1>
+        </header>
+        <main>
+              <h3>Lists of posts</h3>
+            <div>
+                ${postsHTML}   
+            </div>`;
+    } else {
+        return `
         <header>
             <h1>Posts Page</h1>
         </header>
@@ -20,28 +32,44 @@ export default function PostIndex(props) {
             </div>
             <h3>Add a post</h3>
             <form>
-                <label for="title">Title</label><br>
-                <input id="title" name="title" type="text" placeholder="Enter title">
-                <br>
-                <label for="content">Content</label><br>
-                <textarea id="content" name="content" rows="10" cols="50" placeholder="Enter content"></textarea>
-                <br>
-                <label for="categories">Categories:</label><br>
-                <select name="categories" id="categories" multiple>
-                    ${catHTML}
-                </select>
-                <button data-id="0" id="savePost" name="savePost" class="button btn-primary">Save Post</button>
+                <div>
+                    <label for="title">Title:</label><br>
+                    <input id="title" name="title" class="form-control" type="text" placeholder="Enter title">
+                    <div class="invalid-feedback">
+                        Title cannot be blank.
+                    </div>
+                    <div class="valid-feedback">
+                        Your title is ok!
+                    </div>
+                </div>
+                <div>
+                    <label for="content">Content:</label><br>
+                    <textarea id="content" class="mb-1 form-control" name="content" rows="10" cols="50" placeholder="Enter content"></textarea>
+                    <div class="invalid-feedback">
+                        Content cannot be blank.
+                    </div>
+                    <div class="valid-feedback">
+                        Content is ok!
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <label for="categories">Categories (Hold <i class="fa-brands fa-windows"></i> or ⌘):</label><br>
+                            <select class="form-select" name="categories" id="categories" multiple>
+                                ${catHTML}
+                            </select>
+                        </div>
+                    </div>
+                    <button data-id="0" id="savePost" name="savePost" class="float-end mt-1 btn btn-primary">Save Post</button>
+                </div>
             </form>
         </main>`
+    }
 }
 
 function generateCategoriesHTML() {
-    const catList = ["Tech", "Testing", "Coding", "Nature", "Gaming"];
-    const categories = document.getElementById('categories');
-    console.log(catList.length);
     let cats;
     for (let i = 0; i < catList.length; i++) {
-        cats += `<option value=${i + 1}>${catList[i]}</option>`
+        cats += `<option class="categoryList" value=${i + 1}>${catList[i]}</option>`
     }
     return cats
 }
@@ -76,8 +104,8 @@ function generatePostsHTML(posts) {
             `;
         let user = getUser();
         if (user.userName === post.author.userName || user.role === 'ADMIN') {
-            postsHTML += `<td><button data-id=${post.id} class="button btn-primary editPost">Edit</button></td>
-            <td><button data-id=${post.id} class="button btn-danger deletePost">Delete</button></td>
+            postsHTML += `<td><button data-id=${post.id} class="btn btn-primary editPost">Edit</button></td>
+            <td><button data-id=${post.id} class="btn btn-danger deletePost">Delete</button></td>
         </tr>`
         } else {
             postsHTML += `<td></td><td></td></tr>`
@@ -92,6 +120,39 @@ export function postSetup() {
     setupSaveHandler();
     setupEditHandlers();
     setupDeleteHandlers();
+    setupValidationHandlers();
+}
+
+function setupValidationHandlers() {
+    let input = document.querySelector("#title");
+    input.addEventListener("keyup", validateFields);
+    input = document.querySelector("#content");
+    input.addEventListener("keyup", validateFields);
+}
+
+function validateFields() {
+    let isValid = true;
+    let input = document.querySelector("#title");
+    if (input.value.trim().length < 1) {
+        input.classList.add("is-invalid");
+        input.classList.remove("is-valid");
+        isValid = false;
+    } else {
+        input.classList.add("is-valid");
+        input.classList.remove("is-invalid");
+    }
+
+    input = document.querySelector("#content");
+    if (input.value.trim().length < 1) {
+        input.classList.add("is-invalid");
+        input.classList.remove("is-valid");
+        isValid = false;
+    } else {
+        input.classList.add("is-valid");
+        input.classList.remove("is-invalid");
+    }
+
+    return isValid;
 }
 
 function setupEditHandlers() {
@@ -117,13 +178,32 @@ function loadPostIntoForm(postId) {
     // load the post data into the form
     const titleField = document.querySelector("#title");
     const contentField = document.querySelector("#content");
+    const categoriesField = document.querySelectorAll('.categoryList')
+    const PostCats = post.categories
+    console.log(PostCats);
+    console.log(catList);
+    //THIS DOES NOT WORK, DOES SOME WEIRD STUFF RIGHT NOW
+    // NEED TO FIGURE OUT HOW TO SELECT SPECIFIC CATS FROM MULTISELECT TO ONLY CHANGE THOSE
+    // SPECIFIC OPTIONS TO BE SELECTED
+    // if matched cat is equal to option cat then make THAT cat selected?
+    for (let i = 0; i < PostCats.length; i++) {
+        let catListCurrentCat = PostCats[i].name;
+        console.log(catListCurrentCat);
+        for (let j = 0; j < catList.length; j++) {
+            console.log("MATCH TO: " + catList[j]);
+            if (catList[j].toLowerCase() === PostCats[i].name.toLowerCase()) {
+                console.log("Matched: " + catListCurrentCat);
+                categoriesField[i].toggleAttribute('selected');
+            }
+        }
+    }
     // NEED TO PULL CATEGORIES FOR EDITING
-    const categoriesField = document.getElementById('#categories');
-
-    const saveButton = document.querySelector("#savePost");
+    // Need to grab categories of selected post and push them in as selected cats for edit
 
     titleField.value = post.title;
     contentField.value = post.content;
+    validateFields();
+    const saveButton = document.querySelector("#savePost");
     saveButton.setAttribute("data-id", postId);
 }
 
@@ -171,21 +251,16 @@ function setupSaveHandler() {
     //UPDATE: IT WORKS!
     const saveButton = document.querySelector("#savePost");
     saveButton.addEventListener("click", function (event) {
+        validateFields();
         const values = Array.prototype.slice.call(document.querySelectorAll('#categories option:checked'), 0).map(function (v, i, a) {
             return v.value;
         });
-        for (let i = 0; i < values.length; i++) {
-            console.log(`{id: ${values[i]}}`)
-        }
         // TODO: refactor later to a separate function for hygiene
         // TODO: check the data-id for the save button
         const postId = parseInt(this.getAttribute("data-id"));
         // get the title and content for the new/updated post
         const titleField = document.querySelector("#title");
         const contentField = document.querySelector("#content");
-        // if(titleField.value.trim().length - 1) {
-        //
-        // }
         let categoriesList = [];
         for (let i = 0; i < values.length; i++) {
             categoriesList.push({id: values[i]})

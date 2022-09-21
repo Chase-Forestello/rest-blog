@@ -27,7 +27,6 @@ public class PostsController {
     private final PostsRepository postRepository;
     private final UsersRepository userRepository;
     private final CategoriesRepository categoryRepository;
-
     private final EmailService emailService;
 
 
